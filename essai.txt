@@ -1,1 +1,10 @@
-test bite bitée
+fixed acidity : 10
+acide citrique : 2
+residual sugar : 100
+chlorides : normalisé
+free sulfur dioxide : 300 
+total sulfur dioxide : 450
+density : 1.5
+pH : 7
+sulphates : 1.5
+alcohol : 50
