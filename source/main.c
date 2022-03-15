@@ -6,6 +6,8 @@
 
 #define SIZE_BUFFER 150
 
+//Coucou mec
+
 void pause() {system("pause");}
 
 int main(int argc, char const *argv[])
