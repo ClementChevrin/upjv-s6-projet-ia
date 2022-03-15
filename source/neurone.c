@@ -1,4 +1,4 @@
-#include "data.h"
+#include "../header/data.h"
 
 typedef struct neurone
 {
