@@ -6,7 +6,6 @@
 
 #define SIZE_BUFFER 150
 
-//Coucou mec
 
 void pause() {system("pause");}
 
