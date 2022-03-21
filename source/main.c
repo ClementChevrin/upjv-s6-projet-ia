@@ -12,7 +12,7 @@ int main(int argc, char const *argv[])
 {
 	int col = 12;
 	int ligne = 4900;
-	char* csv = "../data/qualite-vin-blanc.csv";
+	char* csv = "data/qualite-vin-blanc.csv";
 	// Get data
 	Data donnee = data_Load(col,ligne,csv,SIZE_BUFFER);
 
@@ -20,7 +20,6 @@ int main(int argc, char const *argv[])
 	if (donnee!=NULL) data_Normalized(donnee);
 	else fprintf(stdout, "Erreur : Chargement des donnees");
 
-
-	data_Free(donnee);
+	if (donnee != NULL) data_Free(donnee);
 	pause();
 }
