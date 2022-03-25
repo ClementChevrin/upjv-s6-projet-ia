@@ -15,6 +15,7 @@ int main(int argc, char const *argv[])
 	int nb_neurone = col;
 	int couche = 4;
 	double lambda = 1;
+	double alpha = 0.1;
 
 
 
@@ -30,12 +31,18 @@ int main(int argc, char const *argv[])
 		// Apprentisage
 		if (donnee!=NULL)
 		{
+			nb_neurone = (col-1>donnee->max[col-1]-donnee->min[col-1]) ? col-1 : donnee->max[col-1]-donnee->min[col-1];
 			Neurone** neurone_array = neurone_Init(nb_neurone,couche);
 			if (neurone_array != NULL)
 			{
 				for (int i = 0; i < 1; ++i)
 				{
-					printf("%lf\n",neurone_Apprentisage(donnee,i,neurone_array,lambda));
+					for (int j = 0; j < 50; ++j)
+					{
+						neurone_Apprentisage(donnee,i,neurone_array,lambda);
+						neurone_Erreur(donnee,neurone_array,lambda);
+						neurone_Correction(donnee,neurone_array,alpha);
+					}
 				}
 			 	neurone_Free(neurone_array,nb_neurone,couche);
 			}	 
