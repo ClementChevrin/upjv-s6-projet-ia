@@ -6,7 +6,7 @@
 
 typedef struct neurone
 {
-	double poids;
+	double *poids;
 	double in,out,err;
 }*Neurone;
 
@@ -66,10 +66,13 @@ Neurone** neurone_Init(int nb, int c)
 		for (int j = 0; j < couche; ++j) 
 		{	
 			n[i][j]=(Neurone)malloc(sizeof(struct neurone));
-			n[i][j]->poids = 0.01;
+			n[i][j]->poids = (double*)malloc(sizeof(double)*nb_neurone);
+			for(int cpt=0;cpt<nb_neurone;cpt++)
+				n[i][j]->poids[cpt]=0.1;
 			n[i][j]->in = 0;
 			n[i][j]->err = 0;
 		}
+		if(i>1) nb_neurone=nb_neurone/2;
 	}
 	return n;
 }
@@ -90,7 +93,7 @@ void neurone_Apprentisage(Data d,int ligne,Neurone** n,double lambda)
 {
 	for (int i = 0; i < d->col-1; ++i)
 	{
-		for (int j = 0; j < d->col-1; ++j) n[i][0]->in += d->critere[j][ligne]*n[i][0]->poids;
+		for (int j = 0; j < d->col-1; ++j) n[i][0]->in += d->critere[j][ligne]*n[i][0]->poids[j];
 		n[i][0]->out = neurone_Sigmoide(n[i][0]->in,lambda);
 	}
 	int nb_neurone = d->col-1;
@@ -99,7 +102,7 @@ void neurone_Apprentisage(Data d,int ligne,Neurone** n,double lambda)
 	{
 		for (int i = 0; i < nb_neurone/2; ++i)
 		{
-			for (int j = 0; j < nb_neurone; ++j) n[i][k]->in += n[j][k-1]->out*n[i][k]->poids;
+			for (int j = 0; j < nb_neurone; ++j) n[i][k]->in += n[j][k-1]->out*n[i][k]->poids[j];
 			n[i][k]->out = neurone_Sigmoide(n[i][k]->in,lambda);
 		}
 		k++;
@@ -107,7 +110,7 @@ void neurone_Apprentisage(Data d,int ligne,Neurone** n,double lambda)
 	}
 	for (int i = 0; i < d->max[d->col-1]-d->min[d->col-1]; ++i)
 	{
-		for (int j = 0; j < nb_neurone; ++j) n[i][k]->in += n[j][k-1]->out*n[i][k]->poids;
+		for (int j = 0; j < nb_neurone; ++j) n[i][k]->in += n[j][k-1]->out*n[i][k]->poids[j];
 		n[i][k]->out = neurone_Sigmoide(n[i][k]->in,lambda);
 	}
 	int max = 0;
@@ -147,7 +150,7 @@ void neurone_Correction(Data d,Neurone** n,double alpha)
 	{
 		for (int j = 0; j < ligne_by_col[k]; ++j)
 		{
-			n[j][i]->poids = n[j][i]->poids - alpha * n[j][i]->err * n[j][i]->in;  
+			n[j][i]->poids[j] = n[j][i]->poids[j] - alpha * n[j][i]->err * n[j][i]->in;  
 		}
 	}
 	//printf("%lf\n",n[0][0]->poids);
