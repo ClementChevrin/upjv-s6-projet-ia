@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 #include "../header/data.h"
+
 
 typedef struct neurone
 {
@@ -57,6 +59,8 @@ void neurone_Erreur(Data d,Neurone** n,double lambda)
 // Init neurone struct
 Neurone** neurone_Init(int nb, int c)
 {
+	time_t t;
+	srand((unsigned) time(&t));
 	int nb_neurone = nb;
 	int couche = c;
 	Neurone** n=(Neurone**)malloc(sizeof(Neurone*)*nb_neurone);
@@ -69,7 +73,7 @@ Neurone** neurone_Init(int nb, int c)
 			n[i][j]->poids = malloc(sizeof(double)*nb_neurone);
 			for(int cpt=0;cpt<nb_neurone;cpt++) 
 			{
-				n[i][j]->poids[cpt]=0.1;
+				n[i][j]->poids[cpt]=(double)rand()/(double)RAND_MAX;
 			}
 			n[i][j]->in = 0;
 			n[i][j]->err = 0;
@@ -124,16 +128,17 @@ double neurone_Apprentisage(Data d,int ligne,Neurone** n,double lambda)
 
 	// Ajout de l'erreur initiale
 	for (int i = 0; i < d->col-1; ++i) for (int j = 0; j < k; ++j) n[i][j]->err = 0;
-	for (int i = 0; i < d->max[d->col-1]-d->min[d->col-1]; ++i) n[i][k]->err = lambda*n[i][k]->in*(1-n[i][k]->in)*(max-d->critere[ligne][d->col-1]);
+	for (int i = 0; i < d->max[d->col-1]-d->min[d->col-1]; ++i) 
+		n[i][k]->err = lambda*n[i][k]->in*(1-n[i][k]->in)*(max-d->critere[ligne][d->col-1]);
 	//printf("%lf   ->    %d\n",n[0][k]->err,max);
-	printf("max= %d\n",max);
+	printf("ligne %d : max= %d\n",ligne,max);
 	return n[max][k]->err;
 }
 
 // Fonction de correction des poids
 void neurone_Correction(Data d,Neurone** n,double alpha)
 {
-	//printf("%f\n",n[0][0]->poids[0]);
+	printf("poids avant = %f\n",n[0][0]->poids[0]);
 	int k = 1;
 	int nb_neurone = d->col-1;
 	while(nb_neurone/2)
@@ -160,5 +165,5 @@ void neurone_Correction(Data d,Neurone** n,double alpha)
 			n[j][i]->poids[j] = n[j][i]->poids[j] - alpha * n[j][i]->err * n[j][i]->in;  
 		}
 	}
-	//printf("%f\n",n[0][0]->poids[0]);
+	printf("poids après = %f\n",n[0][0]->poids[0]);
 }
