@@ -15,7 +15,7 @@ int main(int argc, char const *argv[])
 	int nb_neurone = col;
 	int couche = 4;
 	double lambda = 1;
-	double alpha = 0.2;
+	double alpha = 0.01;
 	double err=1;
 
 

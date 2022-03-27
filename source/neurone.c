@@ -73,7 +73,7 @@ Neurone** neurone_Init(int nb, int c)
 			n[i][j]->poids = malloc(sizeof(double)*nb_neurone);
 			for(int cpt=0;cpt<nb_neurone;cpt++) 
 			{
-				n[i][j]->poids[cpt]=(double)rand()/(double)RAND_MAX;
+				n[i][j]->poids[cpt]=((double)rand()/(double)RAND_MAX)/4;
 			}
 			n[i][j]->in = 0;
 			n[i][j]->err = 0;
@@ -162,6 +162,7 @@ void neurone_Correction(Data d,Neurone** n,double alpha)
 	{
 		for (int j = 0; j < ligne_by_col[k]; ++j)
 		{
+			printf("poids = %f; err=%f ; in=%f\n",n[j][i]->poids[j],n[j][i]->err, n[j][i]->in);
 			n[j][i]->poids[j] = n[j][i]->poids[j] - alpha * n[j][i]->err * n[j][i]->in;  
 		}
 	}
