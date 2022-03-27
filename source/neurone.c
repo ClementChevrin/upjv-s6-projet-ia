@@ -138,7 +138,6 @@ double neurone_Apprentisage(Data d,int ligne,Neurone** n,double lambda)
 // Fonction de correction des poids
 void neurone_Correction(Data d,Neurone** n,double alpha)
 {
-	printf("poids avant = %f\n",n[0][0]->poids[0]);
 	int k = 1;
 	int nb_neurone = d->col-1;
 	while(nb_neurone/2)
@@ -161,10 +160,6 @@ void neurone_Correction(Data d,Neurone** n,double alpha)
 	for (int i = 0; i < k; ++i)
 	{
 		for (int j = 0; j < ligne_by_col[k]; ++j)
-		{
-			printf("poids = %f; err=%f ; in=%f\n",n[j][i]->poids[j],n[j][i]->err, n[j][i]->in);
 			n[j][i]->poids[j] = n[j][i]->poids[j] - alpha * n[j][i]->err * n[j][i]->in;  
-		}
 	}
-	printf("poids après = %f\n",n[0][0]->poids[0]);
 }
