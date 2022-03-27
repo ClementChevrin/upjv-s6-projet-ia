@@ -16,7 +16,7 @@ Neurone** neurone_Init(int nb, int c);
 void neurone_Free(Neurone** n,int nb,int c);
 
 // Fonction d'apprentisage
-void neurone_Apprentisage(Data d,int ligne,Neurone** n,double lambda);
+double neurone_Apprentisage(Data d,int ligne,Neurone** n,double lambda);
 
 // Fonction de correction des poids
 void neurone_Correction(Data d,Neurone** n,double alpha);
