@@ -66,13 +66,14 @@ Neurone** neurone_Init(int nb, int c)
 		for (int j = 0; j < couche; ++j) 
 		{	
 			n[i][j]=(Neurone)malloc(sizeof(struct neurone));
-			n[i][j]->poids = (double*)malloc(sizeof(double)*nb_neurone);
-			for(int cpt=0;cpt<nb_neurone;cpt++)
+			n[i][j]->poids = malloc(sizeof(double)*nb_neurone);
+			for(int cpt=0;cpt<nb_neurone;cpt++) 
+			{
 				n[i][j]->poids[cpt]=0.1;
+			}
 			n[i][j]->in = 0;
 			n[i][j]->err = 0;
 		}
-		if(i>1) nb_neurone=nb_neurone/2;
 	}
 	return n;
 }
@@ -82,7 +83,11 @@ void neurone_Free(Neurone** n,int nb,int c)
 {
 	for(int i = 0; i < nb-1 ; i++)
 	{
-		for (int j = 0; j < c; ++j) free(n[i][j]);
+		for (int j = 0; j < c; ++j) 
+		{
+			free(n[i][j]->poids);
+			free(n[i][j]);
+		}
 		free(n[i]);
 	}
 	free(n);
