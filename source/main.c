@@ -15,7 +15,7 @@ int main(int argc, char const *argv[])
 	int nb_neurone = col;
 	int couche = 4;
 	double lambda = 1;
-	double alpha = 0.01;
+	double alpha = 0.2;
 	double err=1;
 
 
@@ -37,14 +37,16 @@ int main(int argc, char const *argv[])
 			{
 				for (int i = 0; i < 1; ++i)
 				{
-					for (int j = 0; j < 5; ++j)
+					for (int j = 0; j < 1; ++j)
 					{
-						while(err>0.15 || err<-0.15)
+						int cpt=4;
+						while(cpt!=0/*err>0.15 || err<-0.15*/)
 						{
+							printf("\ntour\n");
 							err=neurone_Apprentisage(donnee,i,neurone_array,lambda);
 							neurone_Erreur(donnee,neurone_array,lambda);
 							neurone_Correction(donnee,neurone_array,alpha);
-							printf("err= %f\n",err);
+							cpt--;
 						}
 					}
 				}
