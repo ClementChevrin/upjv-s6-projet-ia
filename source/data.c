@@ -85,7 +85,13 @@ Data data_Load(int c,int l,char* csv_path,int sizebuffer)
 // Noramlized data struct
 Data data_Normalized(Data d)
 {
-	for (int i = 0; i < d->ligne; ++i) for (int j = 0; j < d->col; ++j) d->critere[j][i]=(d->critere[j][i]-d->min[j])/(d->max[j]-d->min[j]);
+	for (int i = 0; i < d->ligne; ++i) 
+	{
+		for (int j = 0; j < d->col; ++j) 
+		{
+			d->critere[j][i]=((d->critere[j][i]-d->min[j])/(d->max[j]-d->min[j]));
+		}
+	}
 }
 
 // Free data struct

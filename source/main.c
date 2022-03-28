@@ -37,9 +37,9 @@ int main(int argc, char const *argv[])
 			{
 				for (int i = 0; i < 1; ++i)
 				{
-					for (int j = 0; j < 1; ++j)
+					for (int j = 0; j < 5; ++j)
 					{
-						while(err>0.1 || err<-0.1)
+						while(err>0.15 || err<-0.15)
 						{
 							err=neurone_Apprentisage(donnee,i,neurone_array,lambda);
 							neurone_Erreur(donnee,neurone_array,lambda);

@@ -59,8 +59,6 @@ void neurone_Erreur(Data d,Neurone** n,double lambda)
 // Init neurone struct
 Neurone** neurone_Init(int nb, int c)
 {
-	time_t t;
-	srand((unsigned) time(&t));
 	int nb_neurone = nb;
 	int couche = c;
 	Neurone** n=(Neurone**)malloc(sizeof(Neurone*)*nb_neurone);
@@ -73,7 +71,7 @@ Neurone** neurone_Init(int nb, int c)
 			n[i][j]->poids = malloc(sizeof(double)*nb_neurone);
 			for(int cpt=0;cpt<nb_neurone;cpt++) 
 			{
-				n[i][j]->poids[cpt]=((double)rand()/(double)RAND_MAX)/4;
+				n[i][j]->poids[cpt]=0.1;
 			}
 			n[i][j]->in = 0;
 			n[i][j]->err = 0;
@@ -100,6 +98,7 @@ void neurone_Free(Neurone** n,int nb,int c)
 // Fonction d'apprentisage
 double neurone_Apprentisage(Data d,int ligne,Neurone** n,double lambda)
 {
+	double errtot=0;
 	for (int i = 0; i < d->col-1; ++i)
 	{
 		for (int j = 0; j < d->col-1; ++j) n[i][0]->in += d->critere[j][ligne]*n[i][0]->poids[j];
@@ -128,11 +127,24 @@ double neurone_Apprentisage(Data d,int ligne,Neurone** n,double lambda)
 
 	// Ajout de l'erreur initiale
 	for (int i = 0; i < d->col-1; ++i) for (int j = 0; j < k; ++j) n[i][j]->err = 0;
+	printf("ligne = %d, col=%d test : %f\n",ligne,d->col-1,((d->critere[d->col-1][ligne])*(d->max[d->col-1]-d->min[d->col-1]))+d->min[d->col-1]);
 	for (int i = 0; i < d->max[d->col-1]-d->min[d->col-1]; ++i) 
-		n[i][k]->err = lambda*n[i][k]->in*(1-n[i][k]->in)*(max-d->critere[ligne][d->col-1]);
+		{
+
+			if(i==((d->critere[d->col-1][ligne])*(d->max[d->col-1]-d->min[d->col-1]))+d->min[d->col-1])
+				{
+					n[i][k]->err = 1-n[i][k]->out;
+					printf("neurone voulu : %d\n",i);
+				}
+			else
+				n[i][k]->err=0-n[i][k]->out;
+			errtot+=(n[i][k]->err)*(n[i][k]->err);
+			printf("neurone %d erreur = %f\n",i,n[i][k]->err);
+		}
+	errtot=errtot/(d->max[d->col-1]-d->min[d->col-1]);
 	//printf("%lf   ->    %d\n",n[0][k]->err,max);
-	printf("ligne %d : max= %d\n",ligne,max);
-	return n[max][k]->err;
+	printf("errtot = %f : max= %d\n",errtot,max);
+	return errtot;
 }
 
 // Fonction de correction des poids
