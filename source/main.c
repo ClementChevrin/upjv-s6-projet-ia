@@ -15,8 +15,8 @@ int main(int argc, char const *argv[])
 	int nb_neurone = col;
 	int couche = 4;
 	double lambda = 1;
-	double alpha = 0.1;
-	double err=1;
+	double alpha = 0.3;
+	double err;
 
 
 	char* csv = "data/qualite-vin-blanc.csv";
@@ -37,16 +37,18 @@ int main(int argc, char const *argv[])
 			{
 				for (int i = 0; i < 1; ++i)
 				{
-					for (int j = 0; j < 1; ++j)
+					for (int j = 0; j < 100; ++j)
 					{
-						int cpt=6;
-						while(cpt!=0/*err>0.15 || err<-0.15*/)
+						printf("\n\nLigne %d\n\n",j);
+						int cpt=4;
+						err=1;
+						while(err>0.15 || err<-0.15)
 						{
-							printf("\ntour\n");
+							//printf("\ntour\n");
 							err=neurone_Apprentisage(donnee,i,neurone_array,lambda);
 							neurone_Erreur(donnee,neurone_array,lambda);
 							neurone_Correction(donnee,neurone_array,alpha);
-							cpt--;
+							//cpt--;
 						}
 					}
 				}

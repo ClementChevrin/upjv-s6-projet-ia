@@ -134,11 +134,11 @@ double neurone_Apprentisage(Data d,int ligne,Neurone** n,double lambda)
 				n[i][k]->err = 1-n[i][k]->out;
 			else
 				n[i][k]->err=0-n[i][k]->out;
-			printf("neurone %d %d = %f\n",i,k,n[i][k]->out);
+			//printf("neurone %d %d = %f\n",i,k,n[i][k]->out);
 			errtot+=(n[i][k]->err)*(n[i][k]->err);
 		}
 	errtot=errtot/(d->max[d->col-1]-d->min[d->col-1]);
-	printf("errtot = %f : max= %d\n",errtot,max);
+	//printf("errtot = %f : max= %d\n",errtot,max);
 	return errtot;
 }
 
@@ -177,7 +177,7 @@ void neurone_Correction(Data d,Neurone** n,double alpha)
 	{
 		for(int j=0;j<ligne_by_col[k-1];++j)
 		{
-			printf("neurone %d poids %d = %f\n",i,j,n[i][k]->poids[j]);
+			//printf("neurone %d poids %d = %f\n",i,j,n[i][k]->poids[j]);
 		}
 	}
 }
