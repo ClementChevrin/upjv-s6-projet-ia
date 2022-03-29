@@ -123,16 +123,16 @@ double neurone_Apprentisage(Data d,int ligne,Neurone** n,double lambda)
 	// Ajout de l'erreur initiale
 	for (int i = 0; i < d->col-1; ++i) for (int j = 0; j < k; ++j) n[i][j]->err = 0;
 	int outDesired=(int)(((d->critere[d->col-1][ligne])*(d->max[d->col-1]-d->min[d->col-1])));
+	//printf("outDesired=%d\n",outDesired);
 	for (int i = 0; i < d->max[d->col-1]-d->min[d->col-1]; ++i) 
 		{
 			if(i==outDesired)
 			{
 				n[i][k]->err = 1-n[i][k]->out;
-				//printf("neurone %d %d = %f\n",i,k,n[k][i]->out);
 			}
 			else
 				n[i][k]->err=0-n[i][k]->out;
-			//printf("neurone %d %d = %f\n",i,k,n[i][k]->out);
+			printf("neurone %d %d = %f\n",i,k,n[i][k]->out);
 			errtot+=(n[i][k]->err)*(n[i][k]->err);
 		}
 	errtot=errtot/(d->max[d->col-1]-d->min[d->col-1]);
