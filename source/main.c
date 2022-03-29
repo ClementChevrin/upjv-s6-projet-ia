@@ -40,7 +40,7 @@ int main(int argc, char const *argv[])
 					for (int j = 0; j < 1; ++j)
 					{
 						int cpt=4;
-						while(cpt!=0/*err>0.15 || err<-0.15*/)
+						while(err>0.15 || err<-0.15)
 						{
 							printf("\ntour\n");
 							err=neurone_Apprentisage(donnee,i,neurone_array,lambda);
@@ -60,5 +60,5 @@ int main(int argc, char const *argv[])
 	else fprintf(stderr, "Erreur : Chargement des donnees\n");
 
 	
-	pause();
+	//pause();
 }
