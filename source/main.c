@@ -37,9 +37,9 @@ int main(int argc, char const *argv[])
 			{
 				for (int i = 0; i < 1; ++i)
 				{
+					//Apprentissage sur les 90% du fichier
 					for (int j = 0; j < ligne_app; ++j)
 					{
-						int cpt=4;
 						err=1;
 						while(err>0.15 || err<-0.15)
 						{
@@ -48,13 +48,14 @@ int main(int argc, char const *argv[])
 							neurone_Correction(donnee,neurone_array,alpha);
 						}
 					}
-					printf("\n\n\n");
+					//Prédiction des 10% restants du fichier
+					/*printf("\n\n\n");
 					int correct=0;
 					for(int j=(ligne-ligne_predict);j<(ligne-ligne_predict)+3;++j)
 					{
 						correct+=neurone_Prediction(donnee,j,neurone_array,lambda);
 					}
-					printf("nombre de predictions correctes=%d\n",correct);
+					printf("nombre de predictions correctes=%d\n",correct);*/
 				}
 			 	neurone_Free(neurone_array,nb_neurone,couche);
 			}	 

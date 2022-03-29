@@ -18,39 +18,6 @@ double neurone_Sigmoide(double x,double lambda)
 	return 1/(1+exp(-lambda*x));
 }
 
-// Fonction erreur
-void neurone_Erreur(Data d,Neurone** n,double lambda)
-{
-	int k = 1;
-	int nb_neurone = d->col-1;
-	while(nb_neurone/2)
-	{
-		k++;
-		nb_neurone = nb_neurone/2;
-	}
-	int* ligne_by_col = (int*)malloc(sizeof(int)*k);
-	nb_neurone = d->col-1;
-	int i = 0;
-	while(nb_neurone/2)
-	{
-		ligne_by_col[i]=nb_neurone;
-		nb_neurone = nb_neurone/2;
-		i++;
-	}
-	ligne_by_col[k-1]=d->max[d->col-1]-d->min[d->col-1];
-	k--;
-	while(k)
-	{
-		for (int i = 0; i < ligne_by_col[k-1]; ++i)
-		{
-			for (int j = 0; j < ligne_by_col[k]; ++j) n[i][k-1]->err += n[j][k]->err*n[j][k]->poids[i];
-			n[i][k-1]->err=lambda*n[i][k-1]->out*(1-n[i][k-1]->out)*n[i][k-1]->err;
-		}
-		k--;
-	}
-	free(ligne_by_col);
-}
-
 // Init neurone struct
 Neurone** neurone_Init(int nb, int c)
 {
@@ -119,7 +86,7 @@ double neurone_Apprentisage(Data d,int ligne,Neurone** n,double lambda)
 	int max = 0;
 	for (int i = 0; i < (int)(d->max[d->col-1]-d->min[d->col-1]); ++i) if(n[max][k]->out < n[i][k]->out) max = i;
 	//max += d->min[d->col-1];
-	printf("max = %d\n",max);
+	//printf("max = %d\n",max);
 	// Ajout de l'erreur initiale
 	for (int i = 0; i < d->col-1; ++i) for (int j = 0; j < k; ++j) n[i][j]->err = 0;
 	int outDesired=(int)(((d->critere[d->col-1][ligne])*(d->max[d->col-1]-d->min[d->col-1])));
@@ -132,11 +99,45 @@ double neurone_Apprentisage(Data d,int ligne,Neurone** n,double lambda)
 			}
 			else
 				n[i][k]->err=0-n[i][k]->out;
-			printf("neurone %d %d = %f\n",i,k,n[i][k]->out);
+			//printf("neurone %d %d = %f\n",i,k,n[i][k]->out);
 			errtot+=(n[i][k]->err)*(n[i][k]->err);
 		}
 	errtot=errtot/(d->max[d->col-1]-d->min[d->col-1]);
+	//printf("errtot=%f",errtot);
 	return errtot;
+}
+
+// Fonction erreur
+void neurone_Erreur(Data d,Neurone** n,double lambda)
+{
+	int k = 1;
+	int nb_neurone = d->col-1;
+	while(nb_neurone/2)
+	{
+		k++;
+		nb_neurone = nb_neurone/2;
+	}
+	int* ligne_by_col = (int*)malloc(sizeof(int)*k);
+	nb_neurone = d->col-1;
+	int i = 0;
+	while(nb_neurone/2)
+	{
+		ligne_by_col[i]=nb_neurone;
+		nb_neurone = nb_neurone/2;
+		i++;
+	}
+	ligne_by_col[k-1]=d->max[d->col-1]-d->min[d->col-1];
+	k--;
+	while(k)
+	{
+		for (int i = 0; i < ligne_by_col[k-1]; ++i)
+		{
+			for (int j = 0; j < ligne_by_col[k]; ++j) n[i][k-1]->err += n[j][k]->err*n[j][k]->poids[i];
+			n[i][k-1]->err=lambda*n[i][k-1]->out*(1-n[i][k-1]->out)*n[i][k-1]->err;
+		}
+		k--;
+	}
+	free(ligne_by_col);
 }
 
 // Fonction de correction des poids
