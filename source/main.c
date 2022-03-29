@@ -39,7 +39,6 @@ int main(int argc, char const *argv[])
 				{
 					for (int j = 0; j < ligne_app; ++j)
 					{
-						//printf("Ligne %d -->",j);
 						int cpt=4;
 						err=1;
 						while(err>0.15 || err<-0.15)
@@ -48,10 +47,10 @@ int main(int argc, char const *argv[])
 							neurone_Erreur(donnee,neurone_array,lambda);
 							neurone_Correction(donnee,neurone_array,alpha);
 						}
-						//printf("// %f\n\n",donnee->critere[col-1][j]*(donnee->max[donnee->col-1]-donnee->min[donnee->col-1])+donnee->min[donnee->col-1]);
 					}
+					printf("\n\n\n");
 					int correct=0;
-					for(int j=(ligne-ligne_predict);j<ligne;++j)
+					for(int j=(ligne-ligne_predict);j<(ligne-ligne_predict)+3;++j)
 					{
 						correct+=neurone_Prediction(donnee,j,neurone_array,lambda);
 					}
