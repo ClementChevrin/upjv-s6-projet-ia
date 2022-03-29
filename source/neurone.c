@@ -43,8 +43,8 @@ void neurone_Erreur(Data d,Neurone** n,double lambda)
 	{
 		for (int i = 0; i < ligne_by_col[k-1]; ++i)
 		{
-			for (int j = 0; j < ligne_by_col[k]; ++j) n[i][k-1]->err += n[j][k]->err;
-			n[i][k-1]->err=lambda*n[i][k-1]->in*(1-n[i][k-1]->in)*n[i][k-1]->err;
+			for (int j = 0; j < ligne_by_col[k]; ++j) n[i][k-1]->err += n[j][k]->err*n[j][k]->poids[i];
+			n[i][k-1]->err=lambda*n[i][k-1]->out*(1-n[i][k-1]->out)*n[i][k-1]->err;
 		}
 		k--;
 	}
@@ -170,14 +170,14 @@ void neurone_Correction(Data d,Neurone** n,double alpha)
 		{
 			for(int y=0;y<ligne_by_col[k-1];++y)
 			{
-				n[j][i]->poids[y] = n[j][i]->poids[y] - (alpha * n[j][i]->err * n[j][i]->in);
+				n[j][i]->poids[y] = n[j][i]->poids[y] + alpha * n[j][i]->err * n[j][i]->in;
 			}
 		}
 	for(int i=0;i<d->max[d->col-1]-d->min[d->col-1];++i)
 	{
 		for(int j=0;j<ligne_by_col[k-1];++j)
 		{
-			//printf("neurone %d poids %d = %f\n",i,j,n[i][k]->poids[j]);
+			printf("neurone %d poids %d = %f\n",i,j,n[i][k]->poids[j]);
 		}
 	}
 }
