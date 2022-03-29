@@ -17,8 +17,8 @@ int main(int argc, char const *argv[])
 	double lambda = 1;
 	double alpha = 0.3;
 	double err;
-
-
+	int ligne_app=(ligne*90)/100;
+	int ligne_predict=ligne-ligne_app;
 	char* csv = "data/qualite-vin-blanc.csv";
 	// Get data
 	Data donnee = data_Load(col,ligne,csv,SIZE_BUFFER);
@@ -37,20 +37,25 @@ int main(int argc, char const *argv[])
 			{
 				for (int i = 0; i < 1; ++i)
 				{
-					for (int j = 0; j < 100; ++j)
+					for (int j = 0; j < ligne_app; ++j)
 					{
-						printf("\n\nLigne %d\n\n",j);
+						//printf("Ligne %d -->",j);
 						int cpt=4;
 						err=1;
 						while(err>0.15 || err<-0.15)
 						{
-							//printf("\ntour\n");
-							err=neurone_Apprentisage(donnee,i,neurone_array,lambda);
+							err=neurone_Apprentisage(donnee,j,neurone_array,lambda);
 							neurone_Erreur(donnee,neurone_array,lambda);
 							neurone_Correction(donnee,neurone_array,alpha);
-							//cpt--;
 						}
+						//printf("// %f\n\n",donnee->critere[col-1][j]*(donnee->max[donnee->col-1]-donnee->min[donnee->col-1])+donnee->min[donnee->col-1]);
 					}
+					int correct=0;
+					for(int j=(ligne-ligne_predict);j<ligne;++j)
+					{
+						correct+=neurone_Prediction(donnee,j,neurone_array,lambda);
+					}
+					printf("nombre de predictions correctes=%d\n",correct);
 				}
 			 	neurone_Free(neurone_array,nb_neurone,couche);
 			}	 

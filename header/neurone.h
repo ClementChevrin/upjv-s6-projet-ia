@@ -20,3 +20,6 @@ double neurone_Apprentisage(Data d,int ligne,Neurone** n,double lambda);
 
 // Fonction de correction des poids
 void neurone_Correction(Data d,Neurone** n,double alpha);
+
+//Fonction de prédiction
+int neurone_Prediction(Data d,int ligne,Neurone** n,double lambda);
