@@ -8,15 +8,18 @@
 
 void pause() {system("pause");}
 
-int main(int argc, char const *argv[])
+int main(int argc, char *argv[])
 {
 	int col = 12;
 	int ligne = 4900;
 	int nb_neurone = col;
 	int couche = 4;
-	double lambda = 2;
-	double alpha = 0.1;
-	double err_Accept=0.15;
+
+
+	double lambda = 1;
+	double alpha = 0.2;
+	double err_Accept=0.05;
+
 	double err;
 	int ligne_app=(ligne*90)/100;
 	int ligne_predict=ligne-ligne_app;
@@ -36,37 +39,34 @@ int main(int argc, char const *argv[])
 			Neurone** neurone_array = neurone_Init(nb_neurone,couche);
 			if (neurone_array != NULL)
 			{
-				for (int i = 0; i < 1; ++i)
+				//Apprentissage sur les 90% du fichier
+				for (int j = 0; j < ligne_app; ++j)
 				{
-					//Apprentissage sur les 90% du fichier
-					for (int j = 0; j < 2; ++j)
+					//alpha+=0.05;
+					printf("%d\n",j );
+					err=1;
+					int cpt=6;
+					while(err>err_Accept || err<-err_Accept)
 					{
-						alpha+=0.05;
-						printf("\n\nligne %d\n",j);
-						err=1;
-						int cpt=2;
-						while(err>err_Accept || err<-err_Accept)
+						err=neurone_Apprentisage(donnee,j,neurone_array,lambda);
+						//printf("err=%f\n",err);
+						if(err>err_Accept || err<-err_Accept)
 						{
-							err=neurone_Apprentisage(donnee,j,neurone_array,lambda);
-							printf("err=%f\n",err);
-							if(err>err_Accept || err<-err_Accept)
-							{
-								neurone_Erreur(donnee,neurone_array,lambda);
-								neurone_Correction(donnee,neurone_array,alpha);
-								//if(j==1) cpt--;
-								if(!cpt) break;
-							}
+							neurone_Erreur(donnee,neurone_array,lambda);
+							neurone_Correction(donnee,neurone_array,alpha,j);
+							if(j==1) cpt--;
+							if(!cpt) break;
 						}
 					}
-					//Prédiction des 10% restants du fichier
-					/*printf("\n\n\n");
-					int correct=0;
-					for(int j=(ligne-ligne_predict);j<(ligne-ligne_predict)+3;++j)
-					{
-						correct+=neurone_Prediction(donnee,j,neurone_array,lambda);
-					}
-					printf("nombre de predictions correctes=%d\n",correct);*/
 				}
+				//Prédiction des 10% restants du fichier
+				printf("\n\n\n");
+				int correct=0;
+				for(int j=(ligne-ligne_predict);j<ligne;++j)
+				{
+					correct+=neurone_Prediction(donnee,j,neurone_array,lambda);
+				}
+				printf("nombre de predictions correctes=%d/%d\n",correct,ligne_predict);
 			 	neurone_Free(neurone_array,nb_neurone,couche);
 			}	 
 			else fprintf(stderr, "Erreur : Creation du tableau de neurone\n");
@@ -77,5 +77,5 @@ int main(int argc, char const *argv[])
 	else fprintf(stderr, "Erreur : Chargement des donnees\n");
 
 	
-	//pause();
+	pause();
 }
