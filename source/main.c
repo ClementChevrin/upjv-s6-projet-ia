@@ -14,8 +14,9 @@ int main(int argc, char const *argv[])
 	int ligne = 4900;
 	int nb_neurone = col;
 	int couche = 4;
-	double lambda = 1;
+	double lambda = 2;
 	double alpha = 0.1;
+	double err_Accept=0.15;
 	double err;
 	int ligne_app=(ligne*90)/100;
 	int ligne_predict=ligne-ligne_app;
@@ -38,19 +39,21 @@ int main(int argc, char const *argv[])
 				for (int i = 0; i < 1; ++i)
 				{
 					//Apprentissage sur les 90% du fichier
-					for (int j = 0; j < ligne_app; ++j)
+					for (int j = 0; j < 2; ++j)
 					{
-						printf("ligne %d\n",j);
+						alpha+=0.05;
+						printf("\n\nligne %d\n",j);
 						err=1;
-						int cpt=20;
-						while(err>0.15 || err<-0.15)
+						int cpt=2;
+						while(err>err_Accept || err<-err_Accept)
 						{
 							err=neurone_Apprentisage(donnee,j,neurone_array,lambda);
-							if(err>0.15 || err<-0.15)
+							printf("err=%f\n",err);
+							if(err>err_Accept || err<-err_Accept)
 							{
 								neurone_Erreur(donnee,neurone_array,lambda);
 								neurone_Correction(donnee,neurone_array,alpha);
-								if(j==1) cpt--;
+								//if(j==1) cpt--;
 								if(!cpt) break;
 							}
 						}
