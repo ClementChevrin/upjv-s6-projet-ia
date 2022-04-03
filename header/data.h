@@ -1,8 +1,8 @@
 // struct data
 typedef struct data
 {
-	int ligne;
-	int col;
+	int ligne;          // Nombre de ligne de donnee
+	int colonne;        // Nombre de colonne de donnee
 	double** critere;	// fixe_acidity           0
 						// volatile_acidity       1
 						// citric_acid            2
@@ -15,9 +15,9 @@ typedef struct data
 						// sulphates              9
 						// alcohol                10
 	                    // quality                11 
-	double* min;
-	double* max;
-	double* coef;
+	double* min;        // Valeur minimale de chaque critere
+	double* max;        // Valeur maximale de chaque critere
+	double* coef;       // Coefficient de normalisation de chaque critere
 }*Data;
 
 
@@ -25,13 +25,13 @@ typedef struct data
 Data data_Init(int nb_donne,int ligne);
 
 // Notify data struct
-Data data_Notify(Data d,char* buffer,int i);
+Data data_Notify(Data donnee,char* buffer,int ligne);
 
 // Load data struct
-Data data_Load(int c,int l,char* csv_path,int sizebuffer);
+Data data_Load(int colonne,int ligne,char* csv_path,int sizebuffer);
 
 // Noramlized data struct
-Data data_Normalized(Data d);
+Data data_Normalized(Data donnee);
 
 // Free data struct
-void data_Free(Data d);
+void data_Free(Data donnee);

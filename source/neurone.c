@@ -5,7 +5,7 @@
 #include <time.h>
 #include "../header/data.h"
 
-
+// struct neurone
 typedef struct neurone
 {
 	double *poids;
@@ -19,120 +19,111 @@ double neurone_Sigmoide(double x,double lambda)
 }
 
 // Init neurone struct
-Neurone** neurone_Init(int nb, int c)
+Neurone** neurone_Init(int nb_neurone, int couche)
 {
-	int nb_neurone = nb;
-	int couche = c;
 	Neurone** n=(Neurone**)malloc(sizeof(Neurone*)*nb_neurone);
-	for (int i = 0; i < nb_neurone; ++i)
+	for (int current_neurone = 0 ; current_neurone < nb_neurone ; ++current_neurone)
 	{
-		n[i] = (Neurone*)malloc(sizeof(Neurone)*couche);
-		for (int j = 0; j < couche; ++j) 
+		n[current_neurone] = (Neurone*)malloc(sizeof(Neurone)*couche);
+		for (int current_couche = 0 ; current_couche < couche ; ++current_couche) 
 		{	
-			n[i][j]=(Neurone)malloc(sizeof(struct neurone));
-			n[i][j]->poids = malloc(sizeof(double)*nb_neurone);
-			for(int cpt=0;cpt<nb_neurone;cpt++) 
-			{
-				n[i][j]->poids[cpt]=0.1;
-			}
-			n[i][j]->in = 0;
-			n[i][j]->err = 0;
+			n[current_neurone][current_couche]=(Neurone)malloc(sizeof(struct neurone));
+			n[current_neurone][current_couche]->poids = malloc(sizeof(double)*nb_neurone);
+
+			// Initialisation des variables
+			for(int current_poids = 0 ; current_poids < nb_neurone ; current_poids++) n[current_neurone][current_couche]->poids[current_poids ]=0.1;
+			n[current_neurone][current_couche]->in = 0;
+			n[current_neurone][current_couche]->err = 0;
 		}
 	}
 	return n;
 }
 
 // Free neurone struct
-void neurone_Free(Neurone** n,int nb,int c)
+void neurone_Free(Neurone** n,int nb_neurone,int couche)
 {
-	for(int i = 0; i < nb-1 ; i++)
+	for(int current_neurone = 0; current_neurone < nb_neurone-1 ; current_neurone++)
 	{
-		for (int j = 0; j < c; ++j) 
+		for (int current_couche = 0; current_couche < couche; ++current_couche) 
 		{
-			free(n[i][j]->poids);
-			free(n[i][j]);
+			free(n[current_neurone][current_couche]->poids);
+			free(n[current_neurone][current_couche]);
 		}
-		free(n[i]);
+		free(n[current_neurone]);
 	}
 	free(n);
 }
 
 // Fonction d'apprentisage
-double neurone_Apprentisage(Data d,int ligne,Neurone** n,double lambda)
+double neurone_Apprentisage(Data donnee,int ligne,Neurone** n,double lambda)
 {
 	// Calcul de sortie de la premiere couche du reseau de neurones
-	for (int i = 0; i < d->col-1; ++i)
+	for (int current_neurone = 0; current_neurone < donnee->colonne-1; ++current_neurone)
 	{
-		for (int j = 0; j < d->col-1; ++j) n[i][0]->in += d->critere[j][ligne]*n[i][0]->poids[j];
-		n[i][0]->out = neurone_Sigmoide(n[i][0]->in,lambda);
+		for (int current_critere = 0; current_critere < donnee->colonne-1; ++current_critere) n[current_neurone][0]->in += donnee->critere[current_critere][ligne]*n[current_neurone][0]->poids[current_critere];
+		n[current_neurone][0]->out = neurone_Sigmoide(n[current_neurone][0]->in,lambda);
 	}
 
 
 	// Calcul de sortie des couches intermediaires du reseau de neurones
-	int nb_neurone = d->col-1;
+	int nb_neurone = donnee->colonne-1;
 	int k = 1;
 	while(nb_neurone/2 > 1)
 	{
-		for (int i = 0; i < nb_neurone/2; ++i)
+		for (int current_neurone = 0; current_neurone < nb_neurone/2; ++current_neurone)
 		{
-			for (int j = 0; j < nb_neurone; ++j) n[i][k]->in += n[j][k-1]->out*n[i][k]->poids[j];
-			n[i][k]->out = neurone_Sigmoide(n[i][k]->in,lambda);
+			for (int current_critere = 0; current_critere < nb_neurone; ++current_critere) n[current_neurone][k]->in += n[current_critere][k-1]->out*n[current_neurone][k]->poids[current_critere];
+			n[current_neurone][k]->out = neurone_Sigmoide(n[current_neurone][k]->in,lambda);
 		}
 		k++;
 		nb_neurone = nb_neurone/2;
 	}
 
 	// Calcul de sortie de la dernier couche du reseau de neurones
-	for (int i = 0; i < d->max[d->col-1]-d->min[d->col-1]; ++i)
+	for (int current_neurone = 0; current_neurone < donnee->max[donnee->colonne-1]-donnee->min[donnee->colonne-1]; ++current_neurone)
 	{
-		for (int j = 0; j < nb_neurone; ++j) n[i][k]->in += n[j][k-1]->out*n[i][k]->poids[j];
-		n[i][k]->out = neurone_Sigmoide(n[i][k]->in,lambda);
+		for (int current_critere = 0; current_critere < nb_neurone; ++current_critere) n[current_neurone][k]->in += n[current_critere][k-1]->out*n[current_neurone][k]->poids[current_critere];
+		n[current_neurone][k]->out = neurone_Sigmoide(n[current_neurone][k]->in,lambda);
 	}
 
 	// Recherche de la sortie la plus grande 
 	int max = 0;
-	for (int i = 0; i < (int)(d->max[d->col-1]-d->min[d->col-1]); ++i) if(n[max][k]->out < n[i][k]->out) max = i;
-	//max += d->min[d->col-1];
-	//printf("max = %d\n",max);
+	for (int current_neurone = 0; current_neurone < (int)(donnee->max[donnee->colonne-1]-donnee->min[donnee->colonne-1]); ++current_neurone) if(n[max][k]->out < n[current_neurone][k]->out) max = current_neurone;
 
 
 	// Ajout de l'erreur initiale
-	for (int i = 0; i < d->col-1; ++i) for (int j = 0; j < k; ++j) n[i][j]->err = 0;
+	for (int current_neurone = 0; current_neurone < donnee->colonne-1; ++current_neurone) for (int current_critere = 0; current_critere < k; ++current_critere) n[current_neurone][current_critere]->err = 0;
 
 	// Sortie desire denormalisee
-	int outDesired=(int)(((d->critere[d->col-1][ligne])*(d->max[d->col-1]-d->min[d->col-1])));
+	int outDesired=(int)(((donnee->critere[donnee->colonne-1][ligne])*(donnee->max[donnee->colonne-1]-donnee->min[donnee->colonne-1])));
 	//printf("outDesired=%d\n",outDesired);
 	
 
 	// Calcul des erreurs de la derniere couche
 	double errtot=0;
-	for (int i = 0; i < d->max[d->col-1]-d->min[d->col-1]; ++i) 
+	for (int current_neurone = 0; current_neurone < donnee->max[donnee->colonne-1]-donnee->min[donnee->colonne-1]; ++current_neurone) 
 	{
-		if(i==outDesired) n[i][k]->err = 1-n[i][k]->out;
-		else n[i][k]->err=0-n[i][k]->out;
-		//printf("neurone %d %d sortie = %f --> erreur =%f\n",i,k,n[i][k]->out,n[i][k]->err);
-		/*for (int y = 0; y < 2; ++y) printf("%f - ",n[i][k]->poids[y]);
-		printf("\n");*/
-		errtot+=(n[i][k]->err)*(n[i][k]->err);
+		if(current_neurone==outDesired) n[current_neurone][k]->err = 1-n[current_neurone][k]->out;
+		else n[current_neurone][k]->err=0-n[current_neurone][k]->out;
+		errtot+=(n[current_neurone][k]->err)*(n[current_neurone][k]->err);
 	}
-	errtot=errtot/(d->max[d->col-1]-d->min[d->col-1]);
-	//printf("errtot=%f",errtot);
+	errtot=errtot/(donnee->max[donnee->colonne-1]-donnee->min[donnee->colonne-1]);
 	return errtot;
 }
 
 // Fonction erreur
-void neurone_Erreur(Data d,Neurone** n,double lambda)
+void neurone_Erreur(Data donnee,Neurone** n,double lambda)
 {
 	// Recuperation du nombre de couche (k) et du nombre de ligne par couche (*ligne_by_col)
 	int k = 1;
-	int nb_neurone = d->col-1;
+	int nb_neurone = donnee->colonne-1;
 	while(nb_neurone/2)
 	{
 		k++;
 		nb_neurone = nb_neurone/2;
 	}
 	int* ligne_by_col = (int*)malloc(sizeof(int)*k);
-	nb_neurone = d->col-1;
+	nb_neurone = donnee->colonne-1;
 	int i = 0;
 	while(nb_neurone/2)
 	{
@@ -140,16 +131,16 @@ void neurone_Erreur(Data d,Neurone** n,double lambda)
 		nb_neurone = nb_neurone/2;
 		i++;
 	}
-	ligne_by_col[k-1]=d->max[d->col-1]-d->min[d->col-1];
+	ligne_by_col[k-1]=donnee->max[donnee->colonne-1]-donnee->min[donnee->colonne-1];
 
 	// Retropropagation des erreurs
 	k--;
 	while(k)
 	{
-		for (int i = 0; i < ligne_by_col[k-1]; ++i)
+		for (int current_neurone = 0; current_neurone < ligne_by_col[k-1]; ++current_neurone)
 		{
-			for (int j = 0; j < ligne_by_col[k]; ++j) n[i][k-1]->err += n[j][k]->err*n[j][k]->poids[i];
-			n[i][k-1]->err=lambda*n[i][k-1]->out*(1-n[i][k-1]->out)*n[i][k-1]->err;
+			for (int j = 0; j < ligne_by_col[k]; ++j) n[current_neurone][k-1]->err += n[j][k]->err*n[j][k]->poids[current_neurone];
+			n[current_neurone][k-1]->err=lambda*n[current_neurone][k-1]->out*(1-n[current_neurone][k-1]->out)*n[current_neurone][k-1]->err;
 		}
 		k--;
 	}
@@ -157,18 +148,18 @@ void neurone_Erreur(Data d,Neurone** n,double lambda)
 }
 
 // Fonction de correction des poids
-void neurone_Correction(Data d,Neurone** n,double alpha,int ligne)
+void neurone_Correction(Data donnee,Neurone** n,double alpha,int ligne)
 {
 	// Recuperation du nombre de couche (k) et du nombre de ligne par couche (*ligne_by_col)
 	int k = 1;
-	int nb_neurone = d->col-1;
+	int nb_neurone = donnee->colonne-1;
 	while(nb_neurone/2)
 	{
 		k++;
 		nb_neurone = nb_neurone/2;
 	}
 	int* ligne_by_col = (int*)malloc(sizeof(int)*k);
-	nb_neurone = d->col-1;
+	nb_neurone = donnee->colonne-1;
 	int i = 0;
 	while(nb_neurone/2)
 	{
@@ -176,35 +167,21 @@ void neurone_Correction(Data d,Neurone** n,double alpha,int ligne)
 		nb_neurone = nb_neurone/2;
 		i++;
 	}
-	ligne_by_col[k-1]=d->max[d->col-1]-d->min[d->col-1];
+	ligne_by_col[k-1]=donnee->max[donnee->colonne-1]-donnee->min[donnee->colonne-1];
 	
 	// Corriger l'ensemble des poids de chaque neurones
 	k--;
-	for (int j = 0; j < ligne_by_col[0]; ++j)
-		{
-			for(int y=0;y<ligne_by_col[0];++y)
-			{
-				n[j][0]->poids[y] = n[j][0]->poids[y] + alpha * n[j][0]->err * d->critere[y][ligne];
-				//printf("neurone %d %d poids%d =%f\n",j,0,y,n[j][0]->poids[y]);
-			}
-		}
-	for (int i = 1; i <= k; ++i)
-		for (int j = 0; j < ligne_by_col[i]; ++j)
-		{
-			for(int y=0;y<ligne_by_col[i-1];++y)
-			{
-				n[j][i]->poids[y] = n[j][i]->poids[y] + alpha * n[j][i]->err * n[y][i-1]->out;
-				//if (i == 3) printf("neurone %d %d poids%d =%f\n",j,i,y,n[j][i]->poids[y]);
-			}
-		}
+	for (int j = 0; j < ligne_by_col[0]; ++j) for(int y=0;y<ligne_by_col[0];++y) n[j][0]->poids[y] = n[j][0]->poids[y] + alpha * n[j][0]->err * donnee->critere[y][ligne];
+
+	for (int i = 1; i <= k; ++i) for (int j = 0; j < ligne_by_col[i]; ++j) for(int y=0;y<ligne_by_col[i-1];++y) n[j][i]->poids[y] = n[j][i]->poids[y] + alpha * n[j][i]->err * n[y][i-1]->out;
 }
 
 //Fonction de prédiction
-int neurone_Prediction(Data d,int ligne,Neurone** n,double lambda)
+int neurone_Prediction(Data donnee,int ligne,Neurone** n,double lambda)
 {
 	// Recuperation du nombre de couche
 	int k = 1;
-	int nb_neurone = d->col-1;
+	int nb_neurone = donnee->colonne-1;
 	while(nb_neurone/2)
 	{
 		k++;
@@ -212,18 +189,14 @@ int neurone_Prediction(Data d,int ligne,Neurone** n,double lambda)
 	}
 	k--;
 
-
-	neurone_Apprentisage(d,ligne,n,lambda);
+	// Calcul de la sortie
+	neurone_Apprentisage(donnee,ligne,n,lambda);
 	int pred=0;
-	int outDesired=(int)(((d->critere[d->col-1][ligne])*(d->max[d->col-1]-d->min[d->col-1])));
-	//printf("desiree = %d\n",outDesired);
-	for (int i = 0; i < (d->max[d->col-1]-d->min[d->col-1]); ++i) 
-	{
-		//printf("out=%f\n",n[i][k]->out);
-		if(n[pred][k]->out < n[i][k]->out) pred = i;
-	}
-	//printf("pred=%d\n",pred);
-	pred += d->min[d->col-1];
+	int outDesired=(int)(((donnee->critere[donnee->colonne-1][ligne])*(donnee->max[donnee->colonne-1]-donnee->min[donnee->colonne-1])));
+	for (int i = 0; i < (donnee->max[donnee->colonne-1]-donnee->min[donnee->colonne-1]); ++i) if(n[pred][k]->out < n[i][k]->out) pred = i;
+	pred += donnee->min[donnee->colonne-1];
+
+	// 1 si l'on trouve la prediction sinon 0
 	if(pred==outDesired)
 		return 1;
 	else

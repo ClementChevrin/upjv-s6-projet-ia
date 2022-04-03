@@ -5,8 +5,8 @@
 // struct data
 typedef struct data
 {
-	int ligne;
-	int col;
+	int ligne;          // Nombre de ligne de donnee
+	int colonne;        // Nombre de colonne de donnee
 	double** critere;	// fixe_acidity           0
 						// volatile_acidity       1
 						// citric_acid            2
@@ -19,31 +19,31 @@ typedef struct data
 						// sulphates              9
 						// alcohol                10
 	                    // quality                11 
-	double* min;
-	double* max;
-	double* coef;
+	double* min;        // Valeur minimale de chaque critere
+	double* max;        // Valeur maximale de chaque critere
+	double* coef;       // Coefficient de normalisation de chaque critere
 }*Data;
 
 
 // Init data struct
 Data data_Init(int nb_donne,int ligne)
 {
-	Data d = (Data)malloc(sizeof(struct data));
-	d->col=nb_donne;
-	d->ligne=ligne;
-	d->critere = (double**)malloc(sizeof(double*)*nb_donne);
-	for (int i = 0; i < nb_donne; ++i) d->critere[i]=(double*)malloc(sizeof(double)*ligne);
-	d-> min = (double*)malloc(sizeof(double)*nb_donne); 
-	for (int i = 0; i < nb_donne; ++i) d-> min[i] = 999999999;
-	d-> max = (double*)malloc(sizeof(double)*nb_donne); 
-	for (int i = 0; i < nb_donne; ++i) d-> max[i] = -999999999;
-	d-> coef = (double*)malloc(sizeof(double)*nb_donne); 
-	for (int i = 0; i < nb_donne; ++i) d-> coef[i] = 0;
-	return d;
+	Data donnee = (Data)malloc(sizeof(struct data));
+	donnee->colonne=nb_donne;
+	donnee->ligne=ligne;
+	donnee->critere = (double**)malloc(sizeof(double*)*nb_donne);
+	for (int i = 0; i < nb_donne; ++i) donnee->critere[i]=(double*)malloc(sizeof(double)*ligne);
+	donnee-> min = (double*)malloc(sizeof(double)*nb_donne); 
+	for (int i = 0; i < nb_donne; ++i) donnee-> min[i] = 999999999;
+	donnee-> max = (double*)malloc(sizeof(double)*nb_donne); 
+	for (int i = 0; i < nb_donne; ++i) donnee-> max[i] = -999999999;
+	donnee-> coef = (double*)malloc(sizeof(double)*nb_donne); 
+	for (int i = 0; i < nb_donne; ++i) donnee-> coef[i] = 0;
+	return donnee;
 }
 
 // Notify data struct
-Data data_Notify(Data d,char* buffer,int i)
+Data data_Notify(Data donnee,char* buffer,int ligne)
 {
     // La définitions de séparateurs connus.
     const char * separators = ",;";
@@ -51,28 +51,28 @@ Data data_Notify(Data d,char* buffer,int i)
     char * strToken = strtok ( buffer, separators );
     while ( strToken != NULL ) 
     {    	
-    	d->critere[j][i] = atof(strToken);
-    	if (atof(strToken) < d->min[j]) d->min[j]=atof(strToken);
-    	if (atof(strToken) > d->max[j]) d->max[j]=atof(strToken);
+    	donnee->critere[j][ligne] = atof(strToken);
+    	if (atof(strToken) < donnee->min[j]) donnee->min[j]=atof(strToken);
+    	if (atof(strToken) > donnee->max[j]) donnee->max[j]=atof(strToken);
     	j++; 
         strToken = strtok ( NULL, separators );
     }
-	return d;
+	return donnee;
 }
 
 // Load data struct
-Data data_Load(int c,int l,char* csv_path,int sizebuffer)
+Data data_Load(int colonne,int ligne,char* csv_path,int sizebuffer)
 {
 	FILE* csv = fopen(csv_path,"r");
 	if (csv != NULL)
 	{
-		Data donnee = data_Init(c,l);
-		int i = 0;
+		Data donnee = data_Init(colonne,ligne);
+		int current_ligne = 0;
 		char* buffer=(char*)malloc(sizeof(char)*sizebuffer);
 		while(fgets(buffer,sizebuffer,csv)!=NULL) 
 		{	
-			data_Notify(donnee,buffer,i);
-			i++;
+			data_Notify(donnee,buffer,current_ligne);
+			current_ligne++;
 		}
 		free(buffer);
 		fclose(csv);
@@ -83,24 +83,24 @@ Data data_Load(int c,int l,char* csv_path,int sizebuffer)
 }
 
 // Noramlized data struct
-Data data_Normalized(Data d)
+Data data_Normalized(Data donnee)
 {
-	for (int i = 0; i < d->ligne; ++i) 
+	for (int ligne = 0; ligne < donnee->ligne; ++ligne) 
 	{
-		for (int j = 0; j < d->col; ++j) 
+		for (int colonne = 0; colonne < donnee->colonne; ++colonne) 
 		{
-			d->critere[j][i]=((d->critere[j][i]-d->min[j])/(d->max[j]-d->min[j]));
+			donnee->critere[colonne][ligne]=((donnee->critere[colonne][ligne]-donnee->min[colonne])/(donnee->max[colonne]-donnee->min[colonne]));
 		}
 	}
 }
 
 // Free data struct
-void data_Free(Data d)
+void data_Free(Data donnee)
 {
-	for (int i = 0; i < d->col; ++i) free(d->critere[i]);
-	free(d-> critere);
-	free(d-> min);
-	free(d-> max);
-	free(d-> coef);
-	free(d);
+	for (int colonne = 0; colonne < donnee->colonne; ++colonne) free(donnee->critere[colonne]);
+	free(donnee-> critere);
+	free(donnee-> min);
+	free(donnee-> max);
+	free(donnee-> coef);
+	free(donnee);
 }
