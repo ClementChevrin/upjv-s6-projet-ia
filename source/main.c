@@ -11,14 +11,13 @@ int main(int argc, char *argv[])
 	double lambda = 1;
 	double alpha = 0.2;
 	double err_Accept=0.25;
-	char* csv = "data/qualite-vin-blanc.csv";
-
+	char* csv = (char*)malloc(sizeof(char)*27);
+	strcpy(csv,"data/qualite-vin-blanc.csv");
+	
 	if (argc>1)
 	{
-		free(csv);
 		if (argc==5)
 		{
-			csv=(char*)malloc(sizeof(char)*strlen(argv[1])); //data/qualite-vin-blanc.csv
 			strcpy(csv,argv[1]);
 			lambda = atof(argv[2]);
 			alpha = atof(argv[3]);
@@ -26,8 +25,6 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			csv=(char*)malloc(sizeof(char)*strlen(argv[1])); //data/qualite-vin-blanc.csv
-			strcpy(csv,argv[1]);
 			lambda = 1;
 			alpha = 0.2;
 			err_Accept = 0.20;
@@ -110,5 +107,6 @@ int main(int argc, char *argv[])
 		else fprintf(stderr, "Erreur : Chargement des donnees\n");
 	}
 	else fprintf(stderr, "Erreur : Calcul colonne et ligne\n");
-	free(csv);
+	if(csv!=NULL)
+		free(csv);
 }
