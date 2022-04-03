@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
+			strcpy(csv,argv[1]);
 			lambda = 1;
 			alpha = 0.2;
 			err_Accept = 0.20;
