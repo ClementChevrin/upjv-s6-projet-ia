@@ -21,6 +21,8 @@ double neurone_Sigmoide(double x,double lambda)
 // Init neurone struct
 Neurone** neurone_Init(int nb_neurone, int couche)
 {
+	time_t t;
+	srand((unsigned) time(&t));
 	Neurone** n=(Neurone**)malloc(sizeof(Neurone*)*nb_neurone);
 	for (int current_neurone = 0 ; current_neurone < nb_neurone ; ++current_neurone)
 	{
@@ -31,7 +33,7 @@ Neurone** neurone_Init(int nb_neurone, int couche)
 			n[current_neurone][current_couche]->poids = malloc(sizeof(double)*nb_neurone);
 
 			// Initialisation des variables
-			for(int current_poids = 0 ; current_poids < nb_neurone ; current_poids++) n[current_neurone][current_couche]->poids[current_poids ]=0.1;
+			for(int current_poids = 0 ; current_poids < nb_neurone ; current_poids++) n[current_neurone][current_couche]->poids[current_poids ]=(rand()/RAND_MAX)/4;
 			n[current_neurone][current_couche]->in = 0;
 			n[current_neurone][current_couche]->err = 0;
 		}

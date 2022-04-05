@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
 	double lambda = 1;
 	double alpha = 0.2;
-	double err_Accept=0.25;
+	double err_Accept=0.20;
 	char* csv = (char*)malloc(sizeof(char)*27);
 	strcpy(csv,"data/qualite-vin-blanc.csv");
 	
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 			strcpy(csv,argv[1]);
 			lambda = 1;
 			alpha = 0.2;
-			err_Accept = 0.20;
+			err_Accept = 0.15;
 		}
 	}
 	int col = 0;
